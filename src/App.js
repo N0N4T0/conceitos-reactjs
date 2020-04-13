@@ -1,16 +1,28 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import api from './services/api';
 
 import "./styles.css";
 
 function App() {
   //estado
-  const [repositories, setRepositories] = useState(['A']);
+  const [repositories, setRepositories] = useState([]);
+
+  //Parametros
+  //1) qual função disparar; 2) quando disparar
+  useEffect(() => {
+    api.get('repositories').then(response => {
+      setRepositories(response.data);
+
+      //visualizando o formato do response no console.log
+      //console.log(response);
+    });
+  }, []);
 
   async function handleAddRepository() {
     //imutabilidade
     setRepositories([...repositories, `Novo repositório ${Date.now()}`]);
 
-    console.log(repositories);
+    //console.log(repositories);
   }
 
   async function handleRemoveRepository(id) {
@@ -21,7 +33,7 @@ function App() {
     <div>
 
       <ul data-testid="repository-list">
-        {repositories.map(repository => <li key={repository}>{repository}</li>)}
+        {repositories.map(repository => <li key={repository.id}>{repository.title}</li>)}
 
         <button onClick={() => handleRemoveRepository(1)}>
             Remover
